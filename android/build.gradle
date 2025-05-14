@@ -13,6 +13,9 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+        flatDir {
+            dirs project(':ffmpeg_kit_flutter_full_gpl').file("ffmpeg-kit-https")
+        }
     }
 }
 
