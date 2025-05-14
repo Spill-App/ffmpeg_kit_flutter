@@ -13,9 +13,7 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url uri("${rootProject.projectDir}/maven-repo")
-        }
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -52,7 +50,7 @@ android {
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.5.0'
-    implementation 'com.github.Spill-App:ffmpeg-kit-https:Tag'
+    implementation 'com.github.Spill-App:ffmpeg-kit-https:-SNAPSHOT'
     implementation files('./libs/smart-exception-java-0.2.1.jar')
     implementation files('./libs/smart-exception-common-0.2.1.jar')
 }
