@@ -14,8 +14,8 @@ rootProject.allprojects {
         google()
         mavenCentral()
         maven {
-        url "${project.projectDir}/maven-repo"
-    }
+            url uri("${rootProject.projectDir}/maven-repo")
+        }
     }
 }
 

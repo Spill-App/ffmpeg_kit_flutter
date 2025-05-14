@@ -1,2 +1,8 @@
-include ':ffmpeg-kit-https'
-project(':ffmpeg-kit-https').projectDir = new File(rootDir, 'ffmpeg-kit-https')
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+    repositories {
+        maven {
+            url "${rootProject.projectDir}/maven-repo"
+        }
+    }
+}
