@@ -50,8 +50,7 @@ android {
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.5.0'
-    implementation 'com.github.Spill-App:ffmpeg-kit-https-jitpack:904db40444'
-    implementation 'com.github.Spill-App:ffmpeg-kit-full-gpl-jitpack:9aaa02a09c'
+    implementation 'com.github.Spill-App:ffmpeg-kit-complete-jitpack:56ec9abb2c'
     implementation files('./libs/smart-exception-java-0.2.1.jar')
     implementation files('./libs/smart-exception-common-0.2.1.jar')
 }
