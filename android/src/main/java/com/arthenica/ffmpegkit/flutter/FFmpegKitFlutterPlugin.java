@@ -1450,9 +1450,17 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
             Map<String, Object> map = new HashMap<>();
 
             if (mediaInformation.getAllProperties() != null) {
-                JSONObject allProperties = mediaInformation.getAllProperties();
-                if (allProperties != null) {
-                    map = toMap(allProperties);
+                Map<String, Object> properties = mediaInformation.getAllProperties();
+                try {
+                    JSONObject allProperties = new JSONObject();
+                    for (Map.Entry<String, Object> entry : properties.entrySet()) {
+                        allProperties.put(entry.getKey(), entry.getValue());
+                    }
+                    if (allProperties != null) {
+                        map = toMap(allProperties);
+                    }
+                } catch (JSONException e) {
+                    // Handle the exception
                 }
             }
 
