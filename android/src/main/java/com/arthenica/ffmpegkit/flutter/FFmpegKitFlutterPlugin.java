@@ -832,7 +832,7 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
                 final List<Statistics> allStatistics = ((FFmpegSession) session).getAllStatistics(timeout);
                 resultHandler.successAsync(result, toStatisticsMapList(allStatistics));
             } else {
-                resultHandler.errorAsync(result, "NOT_FFMPEG_SESSION", "A session is found but it does not have the correct type.");
+                resultHandler.errorAsync(result, "NOT_FFMPEG_SESSION", "ffmpegSessionGetAllStatistics: A session is found but it does not have the correct type."+ session.getClass().getName());
             }
         }
     }
@@ -846,7 +846,7 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
                 final List<Statistics> statistics = ((FFmpegSession) session).getStatistics();
                 resultHandler.successAsync(result, toStatisticsMapList(statistics));
             } else {
-                resultHandler.errorAsync(result, "NOT_FFMPEG_SESSION", "A session is found but it does not have the correct type.");
+                resultHandler.errorAsync(result, "NOT_FFMPEG_SESSION", "ffmpegSessionGetStatistics: A session is found but it does not have the correct type."+ session.getClass().getName());
             }
         }
     }
@@ -1046,7 +1046,7 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
                 final FFmpegSessionExecuteTask ffmpegSessionExecuteTask = new FFmpegSessionExecuteTask((FFmpegSession) session, resultHandler, result);
                 asyncExecutorService.submit(ffmpegSessionExecuteTask);
             } else {
-                resultHandler.errorAsync(result, "NOT_FFMPEG_SESSION", "A session is found but it does not have the correct type.");
+                resultHandler.errorAsync(result, "NOT_FFMPEG_SESSION", "ffmpegSessionExecute: A session is found but it does not have the correct type."+ session.getClass().getName());
             }
         }
     }
@@ -1094,7 +1094,7 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
                 FFmpegKitConfig.asyncFFmpegExecute((FFmpegSession) session);
                 resultHandler.successAsync(result, null);
             } else {
-                resultHandler.errorAsync(result, "NOT_FFMPEG_SESSION", "A session is found but it does not have the correct type.");
+                resultHandler.errorAsync(result, "NOT_FFMPEG_SESSION", "asyncFFmpegSessionExecute: A session is found but it does not have the correct type."+ session.getClass().getName());
             }
         }
     }
