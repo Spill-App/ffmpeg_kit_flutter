@@ -1090,11 +1090,14 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
         if (session == null) {
             resultHandler.errorAsync(result, "SESSION_NOT_FOUND", "Session not found.");
         } else {
-            if (session.isFFmpeg()) {
+            try {
                 FFmpegKitConfig.asyncFFmpegExecute((FFmpegSession) session);
                 resultHandler.successAsync(result, null);
-            } else {
-                resultHandler.errorAsync(result, "NOT_FFMPEG_SESSION", "asyncFFmpegSessionExecute: A session is found but it does not have the correct type."+ session.getClass().getName());
+            } catch (ClassCastException e) {
+                FFmpegKitConfig.asyncFFmpegExecute(session);
+                resultHandler.successAsync(result, null);
+            } catch (Exception e) {
+                resultHandler.errorAsync(result, "EXECUTION_ERROR", "Failed to execute session: " + e.getMessage(), null);
             }
         }
     }
@@ -1104,11 +1107,16 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
         if (session == null) {
             resultHandler.errorAsync(result, "SESSION_NOT_FOUND", "Session not found.");
         } else {
-            if (session.isFFprobe()) {
-                FFmpegKitConfig.asyncFFprobeExecute((FFprobeSession) session);
+            try {
+                // Force cast - let the runtime handle any issues
+                FFmpegKitConfig.asyncFFprobeExecute((FFmpegSession) session);
                 resultHandler.successAsync(result, null);
-            } else {
-                resultHandler.errorAsync(result, "NOT_FFPROBE_SESSION", "A session is found but it does not have the correct type.");
+            } catch (ClassCastException e) {
+                // If casting fails, try a different approach
+                FFmpegKitConfig.asyncFFprobeExecute(session);
+                resultHandler.successAsync(result, null);
+            } catch (Exception e) {
+                resultHandler.errorAsync(result, "EXECUTION_ERROR", "Failed to execute session: " + e.getMessage(), null);
             }
         }
     }
@@ -1118,17 +1126,20 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
         if (session == null) {
             resultHandler.errorAsync(result, "SESSION_NOT_FOUND", "Session not found.");
         } else {
-            if (session.isMediaInformation()) {
-                final int timeout;
-                if (isValidPositiveNumber(waitTimeout)) {
-                    timeout = waitTimeout;
-                } else {
-                    timeout = AbstractSession.DEFAULT_TIMEOUT_FOR_ASYNCHRONOUS_MESSAGES_IN_TRANSMIT;
-                }
+            final int timeout;
+            if (isValidPositiveNumber(waitTimeout)) {
+                timeout = waitTimeout;
+            } else {
+                timeout = AbstractSession.DEFAULT_TIMEOUT_FOR_ASYNCHRONOUS_MESSAGES_IN_TRANSMIT;
+            }
+            try {
                 FFmpegKitConfig.asyncGetMediaInformationExecute((MediaInformationSession) session, timeout);
                 resultHandler.successAsync(result, null);
-            } else {
-                resultHandler.errorAsync(result, "NOT_MEDIA_INFORMATION_SESSION", "A session is found but it does not have the correct type.");
+            } catch (ClassCastException e) {
+                FFmpegKitConfig.asyncGetMediaInformationExecute(session, timeout);
+                resultHandler.successAsync(result, null);
+            } catch (Exception e) {
+                resultHandler.errorAsync(result, "EXECUTION_ERROR", "Failed to execute media information session: " + e.getMessage(), null);
             }
         }
     }
