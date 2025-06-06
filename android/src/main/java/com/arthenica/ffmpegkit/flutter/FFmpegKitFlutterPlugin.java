@@ -814,6 +814,12 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
 
     protected void ffmpegSession(@NonNull final List<String> arguments, @NonNull final Result result) {
         final FFmpegSession session = FFmpegSession.create(arguments.toArray(new String[0]), null, null, null, LogRedirectionStrategy.NEVER_PRINT_LOGS);
+        Log.d("FFmpegKit", "ffmpegExecute: Created session " + session.getSessionId());
+    
+        // IMPORTANT: Make sure the session is stored
+        FFmpegKitConfig.addSession(session);
+        
+        // Return the session info
         resultHandler.successAsync(result, toMap(session));
     }
 
@@ -1086,61 +1092,56 @@ public class FFmpegKitFlutterPlugin implements FlutterPlugin, ActivityAware, Met
     }
 
     protected void asyncFFmpegSessionExecute(@NonNull final Integer sessionId, @NonNull final Result result) {
+        Log.d("FFmpegKit", "asyncFFmpegSessionExecute: Looking for session ID " + sessionId);
+    
+        // Add debug call to see all sessions
+        FFmpegKitConfig.printAllSessions();
+        
         final Session session = FFmpegKitConfig.getSession(sessionId.longValue());
-        if (session == null) {
-            resultHandler.errorAsync(result, "SESSION_NOT_FOUND", "Session not found.");
+        
+        if (session != null) {
+            Log.d("FFmpegKit", "asyncFFmpegSessionExecute: Found session " + session.getSessionId() + " of type " + session.getClass().getSimpleName());
+            FFmpegKitConfig.asyncFFmpegExecute(session);
+            resultHandler.successAsync(result, null);
         } else {
-            try {
-                FFmpegKitConfig.asyncFFmpegExecute((FFmpegSession) session);
-                resultHandler.successAsync(result, null);
-            } catch (ClassCastException e) {
-                FFmpegKitConfig.asyncFFmpegExecute(session);
-                resultHandler.successAsync(result, null);
-            } catch (Exception e) {
-                resultHandler.errorAsync(result, "EXECUTION_ERROR", "Failed to execute session: " + e.getMessage(), null);
-            }
+            Log.e("FFmpegKit", "asyncFFmpegSessionExecute: Session " + sessionId + " not found");
+            FFmpegKitConfig.printAllSessions();
+            resultHandler.errorAsync(result, "SESSION_NOT_FOUND", "Session not found", null);
         }
     }
 
     protected void asyncFFprobeSessionExecute(@NonNull final Integer sessionId, @NonNull final Result result) {
+        Log.d("FFmpegKit", "asyncFFprobeSessionExecute: Looking for session ID " + sessionId);
+    
+        FFmpegKitConfig.printAllSessions();
+        
         final Session session = FFmpegKitConfig.getSession(sessionId.longValue());
-        if (session == null) {
-            resultHandler.errorAsync(result, "SESSION_NOT_FOUND", "Session not found.");
+        
+        if (session != null) {
+            Log.d("FFmpegKit", "asyncFFprobeSessionExecute: Found session " + session.getSessionId());
+            FFmpegKitConfig.asyncFFprobeExecute(session);
+            resultHandler.successAsync(result, null);
         } else {
-            try {
-                // Force cast - let the runtime handle any issues
-                FFmpegKitConfig.asyncFFprobeExecute((FFmpegSession) session);
-                resultHandler.successAsync(result, null);
-            } catch (ClassCastException e) {
-                // If casting fails, try a different approach
-                FFmpegKitConfig.asyncFFprobeExecute(session);
-                resultHandler.successAsync(result, null);
-            } catch (Exception e) {
-                resultHandler.errorAsync(result, "EXECUTION_ERROR", "Failed to execute session: " + e.getMessage(), null);
-            }
+            Log.e("FFmpegKit", "asyncFFprobeSessionExecute: Session " + sessionId + " not found");
+            resultHandler.errorAsync(result, "SESSION_NOT_FOUND", "Session not found", null);
         }
     }
 
     protected void asyncMediaInformationSessionExecute(@NonNull final Integer sessionId, @Nullable final Integer waitTimeout, @NonNull final Result result) {
+        Log.d("FFmpegKit", "asyncMediaInformationSessionExecute: Looking for session ID " + sessionId);
+    
+        FFmpegKitConfig.printAllSessions();
+        
         final Session session = FFmpegKitConfig.getSession(sessionId.longValue());
-        if (session == null) {
-            resultHandler.errorAsync(result, "SESSION_NOT_FOUND", "Session not found.");
+        
+        if (session != null) {
+            Log.d("FFmpegKit", "asyncMediaInformationSessionExecute: Found session " + session.getSessionId());
+            int timeout = waitTimeout != null ? waitTimeout : AbstractSession.DEFAULT_TIMEOUT_FOR_ASYNCHRONOUS_MESSAGES_IN_TRANSMIT;
+            FFmpegKitConfig.asyncGetMediaInformationExecute(session, timeout);
+            resultHandler.successAsync(result, null);
         } else {
-            final int timeout;
-            if (isValidPositiveNumber(waitTimeout)) {
-                timeout = waitTimeout;
-            } else {
-                timeout = AbstractSession.DEFAULT_TIMEOUT_FOR_ASYNCHRONOUS_MESSAGES_IN_TRANSMIT;
-            }
-            try {
-                FFmpegKitConfig.asyncGetMediaInformationExecute((MediaInformationSession) session, timeout);
-                resultHandler.successAsync(result, null);
-            } catch (ClassCastException e) {
-                FFmpegKitConfig.asyncGetMediaInformationExecute(session, timeout);
-                resultHandler.successAsync(result, null);
-            } catch (Exception e) {
-                resultHandler.errorAsync(result, "EXECUTION_ERROR", "Failed to execute media information session: " + e.getMessage(), null);
-            }
+            Log.e("FFmpegKit", "asyncMediaInformationSessionExecute: Session " + sessionId + " not found");
+            resultHandler.errorAsync(result, "SESSION_NOT_FOUND", "Session not found", null);
         }
     }
 
